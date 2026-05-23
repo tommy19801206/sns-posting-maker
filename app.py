@@ -1,5 +1,5 @@
 import streamlit as st
-import anthropic
+import google.generativeai as genai
 
 # ─── ページ設定 ───────────────────────────────────────────
 st.set_page_config(
@@ -140,19 +140,15 @@ NANA_STYLE = """【今村奈々スタイルの書き方ルール（必ず守る�
 # ─── Claude API 呼び出し ──────────────────────────────────
 def call_claude(prompt: str) -> str:
     try:
-        api_key = st.secrets["ANTHROPIC_API_KEY"]
+        api_key = st.secrets["GEMINI_API_KEY"]
     except Exception:
-        st.error("⚠️ APIキーが設定されていません。Streamlit Cloud の Settings → Secrets に ANTHROPIC_API_KEY を追加してください。")
+        st.error("⚠️ APIキーが設定されていません。Streamlit Cloud の Settings → Secrets に GEMINI_API_KEY を追加してください。")
         st.stop()
-    client = anthropic.Anthropic(api_key=api_key)
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.0-flash")
     with st.spinner("✨ AIが生成中…少々お待ちください"):
-        msg = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2048,
-            messages=[{"role": "user", "content": prompt}],
-        )
-    return msg.content[0].text
-
+        response = model.generate_content(prompt)
+    return response.text
 # ─── ヘッダー ─────────────────────────────────────────────
 st.markdown('<div class="main-title">✨ SNS投稿メーカー</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-sub">今村奈々スタイル × 感情設計 — 5媒体対応</div>', unsafe_allow_html=True)
