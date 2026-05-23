@@ -1,5 +1,9 @@
 import streamlit as st
+# 変更前
 import google.generativeai as genai
+
+# 変更後
+from google import genai
 
 # ─── ページ設定 ───────────────────────────────────────────
 st.set_page_config(
@@ -138,16 +142,12 @@ NANA_STYLE = """【今村奈々スタイルの書き方ルール（必ず守る�
 一緒にいきませんか？"""
 
 # ─── Claude API 呼び出し ──────────────────────────────────
-def call_claude(prompt: str) -> str:
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-    except Exception:
-        st.error("⚠️ APIキーが設定されていません。Streamlit Cloud の Settings → Secrets に GEMINI_API_KEY を追加してください。")
-        st.stop()
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+client = genai.Client(api_key=api_key)
     with st.spinner("✨ AIが生成中…少々お待ちください"):
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
     return response.text
 # ─── ヘッダー ─────────────────────────────────────────────
 st.markdown('<div class="main-title">✨ SNS投稿メーカー</div>', unsafe_allow_html=True)
