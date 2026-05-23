@@ -1,5 +1,5 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
  
 # ─── ページ設定 ───────────────────────────────────────────
 st.set_page_config(
@@ -142,14 +142,12 @@ def call_claude(prompt: str) -> str:
     try:
         api_key = st.secrets["GEMINI_API_KEY"]
     except Exception:
-        st.error("⚠️ APIキーが設定されていません。Streamlit Cloud の Settings → Secrets に GEMINI_API_KEY を追加してください。")
+        st.error("⚠️ APIキーが設定されていません。")
         st.stop()
-    client = genai.Client(api_key=api_key)
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.5-flash")
     with st.spinner("✨ AIが生成中…少々お待ちください"):
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt,
-        )
+        response = model.generate_content(prompt)
     return response.text
  
 # ─── ヘッダー ─────────────────────────────────────────────
