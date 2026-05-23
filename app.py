@@ -147,7 +147,7 @@ def call_claude(prompt: str) -> str:
     client = genai.Client(api_key=api_key)
     with st.spinner("✨ AIが生成中…少々お待ちください"):
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=prompt,
         )
     return response.text
